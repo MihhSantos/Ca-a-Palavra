@@ -2,17 +2,17 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Desafio Sushi da Miriã 🍣</title>
+  <title>Caça-Palavras da Miriã 🍣</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fff8f0;
+      font-family: sans-serif;
+      background-color: #fff0f5;
       text-align: center;
       padding: 20px;
     }
 
     h1 {
-      color: #ff4c4c;
+      color: #d93b3b;
     }
 
     table {
@@ -28,29 +28,20 @@
       font-weight: bold;
       cursor: pointer;
       user-select: none;
-      background-color: #ffffff;
     }
 
     td.found {
-      background-color: #4caf50;
+      background-color: #90ee90;
       color: white;
     }
 
     td.selected {
-      background-color: #ffeeba;
+      background-color: #ffa;
     }
 
     #word-list {
       margin-top: 20px;
       font-size: 18px;
-    }
-
-    #word-list span {
-      display: inline-block;
-      margin: 5px 8px;
-      padding: 4px 8px;
-      border-radius: 5px;
-      background-color: #ffe4e1;
     }
 
     #final-screen {
@@ -76,21 +67,21 @@
 </head>
 <body>
 
-  <h1>🍱 Desafio Sushi da Miriã 🍣</h1>
-  <p>Encontre todos os elementos do rodízio especial!</p>
+  <h1>🧩 Caça-Palavras do Rodízio 🍣</h1>
+  <p>Encontre todas as palavras sobre sushi e Miriã!</p>
 
   <table id="grid"></table>
 
   <div id="word-list">
-    <p><strong>Itens escondidos:</strong></p>
+    <p><strong>Palavras para encontrar:</strong></p>
     <p id="words"></p>
   </div>
 
   <div id="final-screen">
-    <h2>✨ Você dominou o rodízio da Miriã! ✨</h2>
+    <h2>🎉 Você encontrou todos os sabores do rodízio!</h2>
     <p><strong>📅 Dia: 09/08 às 19h</strong></p>
-    <p><strong>🚗 A carona sai às 18:30 — não se atrase!</strong></p>
-    <p>Confirme sua presença abaixo:</p>
+    <p><strong>🚗 Miriã irá te buscar às 18:30</strong></p>
+    <p>Deseja confirmar presença?</p>
     <button class="btn" onclick="confirmar()">✅ Confirmar Presença</button>
     <button class="btn" onclick="recusar()">❌ Não posso ir</button>
   </div>
@@ -100,8 +91,8 @@
     const wordsElement = document.getElementById('words');
     const finalScreen = document.getElementById('final-screen');
 
-    const words = ['SUSHI', 'TEMAKI', 'HASHI', 'WASABI', 'GYOZA', 'SAKÊ', 'YAKISSOBA', 'SUNOMONO', 'TARÊ', 'MIRIA', 'RODIZIO', 'NORI'];
-    const gridSize = 20;
+    const words = ['SUSHI', 'MIRIA', 'RODIZIO', 'HASHI', 'WASABI', 'SOYU'];
+    const gridSize = 12;
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
     const foundWords = new Set();
 
@@ -151,7 +142,7 @@
         gridElement.appendChild(row);
       }
 
-      wordsElement.innerHTML = words.map(w => `<span id="word-${w}">${w}</span>`).join('');
+      wordsElement.innerHTML = words.map(w => `<span id="word-${w}">${w}</span>`).join(' | ');
     }
 
     let selection = [];
@@ -191,14 +182,14 @@
     }
 
     function confirmar() {
-      alert("Presença confirmada! 🍱 Vai ter sushi sim!");
+      alert("Presença confirmada! 🎉 Nos vemos no sushi!");
     }
 
     function recusar() {
-      alert("Que triste! 😢 A Miriã vai guardar seu sushi pra próxima.");
+      alert("Ahh, que pena! Fica pra próxima 😢");
     }
 
-    // Inicialização
+    // inicialização
     words.forEach(placeWord);
     fillGrid();
     renderGrid();
