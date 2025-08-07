@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Desafio Sushi da Miriã 🍣</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff8f0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #ff4c4c;
+    }
+
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+
+    td {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ccc;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      background-color: #ffffff;
+    }
+
+    td.found {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    td.selected {
+      background-color: #ffeeba;
+    }
+
+    #word-list {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    #word-list span {
+      display: inline-block;
+      margin: 5px 8px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      background-color: #ffe4e1;
+    }
+
+    #final-screen {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .btn {
+      background-color: #ff6347;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      margin: 10px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #e5533c;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🍱 Desafio Sushi da Miriã 🍣</h1>
+  <p>Encontre todos os elementos do rodízio especial!</p>
+
+  <table id="grid"></table>
+
+  <div id="word-list">
+    <p><strong>Itens escondidos:</strong></p>
+    <p id="words"></p>
+  </div>
+
+  <div id="final-screen">
+    <h2>✨ Você dominou o rodízio da Miriã! ✨</h2>
+    <p><strong>📅 Dia: 09/08 às 19h</strong></p>
+    <p><strong>🚗 A carona sai às 18:30 — não se atrase!</strong></p>
+    <p>Confirme sua presença abaixo:</p>
+    <button class="btn" onclick="confirmar()">✅ Confirmar Presença</button>
+    <button class="btn" onclick="recusar()">❌ Não posso ir</button>
+  </div>
+
+  <script>
+    const gridElement = document.getElementById('grid');
+    const wordsElement = document.getElementById('words');
+    const finalScreen = document.getElementById('final-screen');
+
+    const words = ['SUSHI', 'TEMAKI', 'HASHI', 'WASABI', 'GYOZA', 'SAKÊ', 'YAKISSOBA', 'SUNOMONO', 'TARÊ', 'MIRIA', 'RODIZIO', 'NORI'];
+    const gridSize = 20;
+    const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
+    const foundWords = new Set();
+
+    function placeWord(word) {
+      let placed = false;
+      while (!placed) {
+        const dir = Math.random() < 0.5 ? 'H' : 'V';
+        const row = Math.floor(Math.random() * gridSize);
+        const col = Math.floor(Math.random() * gridSize);
+
+        if (dir === 'H' && col + word.length <= gridSize) {
+          if (word.split('').every((ch, i) => grid[row][col + i] === '' || grid[row][col + i] === ch)) {
+            word.split('').forEach((ch, i) => grid[row][col + i] = ch);
+            placed = true;
+          }
+        } else if (dir === 'V' && row + word.length <= gridSize) {
+          if (word.split('').every((ch, i) => grid[row + i][col] === '' || grid[row + i][col] === ch)) {
+            word.split('').forEach((ch, i) => grid[row + i][col] = ch);
+            placed = true;
+          }
+        }
+      }
+    }
+
+    function fillGrid() {
+      for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+          if (grid[i][j] === '') {
+            grid[i][j] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+          }
+        }
+      }
+    }
+
+    function renderGrid() {
+      gridElement.innerHTML = '';
+      for (let i = 0; i < gridSize; i++) {
+        const row = document.createElement('tr');
+        for (let j = 0; j < gridSize; j++) {
+          const cell = document.createElement('td');
+          cell.textContent = grid[i][j];
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.onclick = selectLetter;
+          row.appendChild(cell);
+        }
+        gridElement.appendChild(row);
+      }
+
+      wordsElement.innerHTML = words.map(w => `<span id="word-${w}">${w}</span>`).join('');
+    }
+
+    let selection = [];
+
+    function selectLetter(e) {
+      const cell = e.target;
+      cell.classList.toggle('selected');
+
+      const row = +cell.dataset.row;
+      const col = +cell.dataset.col;
+      const pos = { row, col, cell };
+
+      const index = selection.findIndex(p => p.row === row && p.col === col);
+      if (index >= 0) {
+        selection.splice(index, 1);
+      } else {
+        selection.push(pos);
+      }
+
+      checkSelection();
+    }
+
+    function checkSelection() {
+      const word = selection.map(p => grid[p.row][p.col]).join('').toUpperCase();
+      if (words.includes(word)) {
+        foundWords.add(word);
+        selection.forEach(p => p.cell.classList.add('found'));
+        selection.forEach(p => p.cell.classList.remove('selected'));
+        selection = [];
+
+        document.getElementById(`word-${word}`).style.textDecoration = "line-through";
+
+        if (foundWords.size === words.length) {
+          finalScreen.style.display = "block";
+        }
+      }
+    }
+
+    function confirmar() {
+      alert("Presença confirmada! 🍱 Vai ter sushi sim!");
+    }
+
+    function recusar() {
+      alert("Que triste! 😢 A Miriã vai guardar seu sushi pra próxima.");
+    }
+
+    // Inicialização
+    words.forEach(placeWord);
+    fillGrid();
+    renderGrid();
+  </script>
+
+</body>
+</html>
